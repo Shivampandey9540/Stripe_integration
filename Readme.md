@@ -4,7 +4,7 @@
 
 # MOre updates to come thank you
 
-> Add config.env inside config Folder
+> Update config.env inside config Folder
 
 > npm run dev for Nodemon
 
