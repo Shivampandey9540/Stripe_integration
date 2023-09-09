@@ -2,7 +2,7 @@
 
 # Simple Integration of Razor Pay using node.js and sample model for html integration
 
-# MOre updates to come thank you
+# More updates to come thank you
 
 > Update config.env inside config Folder
 
