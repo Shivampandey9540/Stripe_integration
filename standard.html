@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RazorPay Integration</title>
+    <!-- Include Razorpay.js -->
+    <script src="https://checkout.razorpay.com/v1/razorpay.js"></script>
+    <!-- Include Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+    <!-- // please provide amount value here  in -->
+    <button id="rzp-button1" onclick="checkoutHandler(50000)">Pay with Razorpay</button>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+
+        async function checkoutHandler(amount) {
+
+            // Step 1: Fetch the Razorpay API Key
+            // please change this url to your url 
+            const keyResponse = await axios.get("http://localhost:4000/api/getkey");
+
+            const key = keyResponse.data.key;
+
+            // Step 2: Create a Razorpay order
+            const orderData = { amount };
+            const orderResponse = await axios.post("http://localhost:4000/api/checkout", orderData);
+            const order = orderResponse.data.order;
+            const options = {
+                "key": key, // Enter the Key ID generated from the Dashboard
+                "amount": Number(amount * 100), // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                "currency": "INR",
+                "name": "Acme Corp",
+                "description": "Test Transaction",
+                "image": "https://example.com/your_logo",
+                // change  this url to yours
+                // "callback_url": "http://localhost:4000/api/paymentverification",
+                "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                "handler": async function (response) {
+                    const keyResponse = await axios.post("http://localhost:4000/api/paymentverification", {
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_signature: response.razorpay_signature
+                    });
+    
+
+                    alert(keyResponse.data.data.payment_id);
+                    alert(keyResponse.data.data.order_id);
+                    alert(response.razorpay_signature)
+                },
+                "prefill": {
+                    "name": "Gaurav Kumar",
+                    "email": "gaurav.kumar@example.com",
+                    "contact": "9000090000"
+                },
+                "notes": {
+                    "address": "Razorpay Corporate Office"
+                },
+                "theme": {
+                    "color": "#3399cc"
+                }
+            };
+            var rzp1 = new Razorpay(options);
+            rzp1.on('payment.failed', function (response) {
+                alert(response.error.code);
+                alert(response.error.description);
+                alert(response.error.source);
+                alert(response.error.step);
+                alert(response.error.reason);
+                alert(response.error.metadata.order_id);
+                alert(response.error.metadata.payment_id);
+            });
+
+            rzp1.open();
+
+        }
+
+
+    </script>
+    <!-- <button onclick="checkoutHandler(1000)">Pay Now</button>
+
+    <script>
+        async function checkoutHandler(amount) {
+            try {
+                // Step 1: Fetch the Razorpay API Key
+                // const keyResponse = await axios.get("http://localhost:4000/api/getkey");
+                // const key = keyResponse.data.key;
+
+                // // Step 2: Create a Razorpay order
+                // const orderData = { amount };
+                // const orderResponse = await axios.post("http://localhost:4000/api/checkout", orderData);
+                // const order = orderResponse.data.order;
+
+                // Step 3: Initialize Razorpay and open the payment dialog
+                let order ="dfa;klsdkz"
+                const options = {
+                    key:"kdjslakl",
+                    amount: order.amount||"dfsaf",
+                    currency: "INR",
+                    name: "6 Pack Programmer",
+                    description: "Tutorial of RazorPay",
+                    image: "https://avatars.githubusercontent.com/u/25058652?v=4",
+                    order_id: order.id,
+                    callback_url: "http://localhost:4000/api/paymentverification",
+                    prefill: {
+                        name: "Gaurav Kumar",
+                        email: "gaurav.kumar@example.com",
+                        contact: "9999999999"
+                    },
+                    notes: {
+                        "address": "Razorpay Corporate Office"
+                    },
+                    theme: {
+                        "color": "#121212"
+                    }
+                };
+                var rzp1 = new Razorpay(options);
+                rzp1.on('payment.failed', function (response) {
+                    alert(response.error.code);
+                    alert(response.error.description);
+                    alert(response.error.source);
+                    alert(response.error.step);
+                    alert(response.error.reason);
+                    alert(response.error.metadata.order_id);
+                    alert(response.error.metadata.payment_id);
+                });
+                // const razor = new Razorpay(options);
+                
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+    </script> -->
+</body>
+
+</html>
